@@ -1,12 +1,20 @@
-﻿# CMakeList.txt: проект CMake для SolitareGame; включите исходный код и определения,
-# укажите здесь логику для конкретного проекта.
-#
+﻿cmake_minimum_required(VERSION 3.23)
 
-# Добавьте источник в исполняемый файл этого проекта.
-add_executable (SolitareGame "SolitareGame.cpp" "SolitareGame.h" "Functions.cpp")
+set(project "SolitareGame_practics")
+project(${project})
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET SolitareGame PROPERTY CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
-# TODO: Добавьте тесты и целевые объекты, если это необходимо.
+set(${project}_SOURCES
+        Functions.cpp)
+
+set(${project}_HEADERS
+        Header.h)
+
+set(${project}_SOURCE_LIST
+        ${${project}_SOURCES}
+        ${${project}_HEADERS})
+
+add_library(${project}
+        STATIC
+        ${${project}_SOURCE_LIST})
