@@ -1,12 +1,25 @@
-﻿// SolitareGame.cpp: определяет точку входа для приложения.
-//
-
-#include "SolitareGame.h"
-
-using namespace std;
+#include <SFML/Graphics.hpp>
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::CircleShape shape(50.f);
+    shape.setFillColor(sf::Color::Red);
+    shape.setPosition(50, 50);
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(shape);
+        window.display();
+    }
+
+    return 0;
 }
