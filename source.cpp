@@ -1,12 +1,12 @@
 #include "header.h"
 
-const int width = 155;
-const int height = 227;
-const int dist_x = 20;
-const int dist_y = 20;
-const int dist = 2;
-const float Scale = 0.5;
-const int distantion = 25;
+const int width = 155;//ширина карты на текстуре
+const int height = 227;//длина карты на текстуре
+const int dist_x = 20;//отступы по горизонатли
+const int dist_y = 20;//отсупы по вертикали
+const int dist = 2;//расстояние между картамив на картинке
+const float Scale = 0.5;//во сколько раз мы уменьшаем текстуру карты
+const int distantion = 25;//расстояние между картами
 int queue = 0;
 
 
