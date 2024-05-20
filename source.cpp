@@ -399,3 +399,171 @@ void Game_Field::shiftCard(int i, int x, int y){
     }
 }
 
+
+void Drawing(){
+    int temp;
+    Game_Field field;
+    field.plant(field.random_change());
+    sf::RenderWindow window(sf::VideoMode(1000, 600), "Pasyans");
+    vis_field f; 
+    
+    sf::RectangleShape ma[4];
+    for(int i = 0; i < 4; i++){
+        ma[i].setSize(sf::Vector2f(width, height));
+        ma[i].setScale(Scale, Scale);
+        ma[i].setPosition(i * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x), dist_y);
+    }
+
+    sf::RectangleShape base[2];
+    for(int i = 0; i < 2; i++){
+        base[i].setSize(sf::Vector2f(width, height));
+        base[i].setScale(Scale, Scale);
+        base[i].setPosition(i * (width * 0.5 + dist_x) + 2 * dist_x, dist_y);
+    }
+
+    sf::RectangleShape sim[7];
+    for(int i = 0; i < 7; i++){
+        sim[i].setSize(sf::Vector2f(width, height));
+        sim[i].setScale(Scale, Scale);
+        sim[i].setPosition(dist_x + i * (dist_x + width * 0.5), (dist_y + height * 0.5) + dist_y);
+    }
+   
+    f = View(f, field);
+    while (window.isOpen())
+    {
+        sf::Vector2i mouse = sf::Mouse::getPosition(window);
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+            if (event.type == sf::Event::MouseButtonReleased)
+                wasMouseButtonReleased = true;
+        }
+        
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+            if(wasMouseButtonReleased){
+                if(mouse.x > 2 * dist_x && mouse.x < 2 * dist_x + width && mouse.y > dist_y && mouse.y < dist_y + height){
+                    field.scrol_base();
+                    f = view_scrol(f,field);
+                }
+                if(mouse.x > (width * 0.5 + dist_x) + 2 * dist_x && mouse.x < (width * 0.5 + dist_x) + 2 * dist_x + width && mouse.y > dist_y && mouse.y < dist_y + height){
+                    queue = 1;
+                }
+                wasMouseButtonReleased = false;
+            }
+        }
+        
+        window.clear(sf::Color::Green);
+        
+        for(int i = 0; i < 4; i++)
+            window.draw(ma[i]);
+        for(int i = 0; i < 7; i++)
+            window.draw(sim[i]);
+        for(int i = 0; i < 2; i++)
+            window.draw(base[i]);
+        for(int j = 0; j < 7; j++){
+            for(int i = 0; i < f.card1[j].size(); i++)
+                window.draw(f.card1[j][i].sprite);
+        }
+        for(int j = 0; j < 4; j++){
+            for(int i = 0; i < f.card2[j].size(); i++)
+                window.draw(f.card2[j][i].sprite);
+        }
+        for(int j = 0; j < 2; j++){
+            for(int i = 0; i < f.card3[j].size(); i++)
+                window.draw(f.card3[j][i].sprite);
+        }
+        window.display();
+    }
+}
+
+vis_field View(vis_field& field,  Game_Field& f){
+    int k = 0;//счетчик спрайтов карт
+    int n = 0;//счетчик отступов
+    for(int i = 0; i < 7; i++){
+        k = 0;
+        if(!f.sim[i].isEmpty()){
+            for(auto &p: f.sim[i].cards){
+                if(p.visible){
+                    field.card1[i][k].text.loadFromFile("picture.png",sf::IntRect((p.value - 1) * (width + dist),p.dist_suit(p.suit) * (height + dist),width,height));
+                    field.card1[i][k].sprite.setTexture(field.card1[i][k].text);
+                    field.card1[i][k].sprite.setScale(Scale, Scale);
+                }
+                else{
+                    field.card1[i][k].text.loadFromFile("picture.png", sf::IntRect(2 * (width + dist), 4 * (height + dist),width,height));
+                    field.card1[i][k].sprite.setTexture(field.card1[i][k].text);
+                    field.card1[i][k].sprite.setScale(Scale, Scale);
+                }
+                field.card1[i][k].sprite.setPosition(dist_x + i * (dist_x + width * Scale) ,(dist_y + height * Scale) + dist_y + n * distantion);
+                n++;
+                k++;
+            }
+        }
+        n = 0;
+    }
+    for(int i = 0; i < 4; i++){
+        k = 0;
+        if(!f.main[i].isEmpty()){
+            for(auto &p: f.sim[i].cards){
+                if(p.visible){
+                    field.card2[i][k].text.loadFromFile("picture.png",sf::IntRect((p.value - 1) * (width + dist),p.dist_suit(p.suit) * (height + dist),width,height));
+                    field.card2[i][k].sprite.setTexture(field.card2[i][k].text);
+                    field.card2[i][k].sprite.setScale(Scale, Scale);
+                }
+                else{
+                    field.card2[i][k].text.loadFromFile("picture.png", sf::IntRect(2 * (width + dist), 4 * (height + dist),width,height));
+                    field.card2[i][k].sprite.setTexture(field.card2[i][k].text);
+                    field.card2[i][k].sprite.setScale(Scale, Scale);
+                }
+                field.card2[i][k].sprite.setPosition(dist_x + i * (dist_x + width * Scale) ,(dist_y + height * Scale) + dist_y + n * distantion);
+                k++;
+            }
+        }
+    }
+    for(int i = 0; i < 2; i++){
+        k = 0;
+        if(!f.base[i].isEmpty()){
+            for(auto &p: f.base[i].cards){
+                if(p.visible){
+                    field.card3[i][k].text.loadFromFile("picture.png",sf::IntRect((p.value - 1) * (width + dist),p.dist_suit(p.suit) * (height + dist),width,height));
+                    field.card3[i][k].sprite.setTexture(field.card3[i][k].text);
+                    field.card3[i][k].sprite.setScale(Scale, Scale);
+                }
+                else{
+                    field.card3[i][k].text.loadFromFile("picture.png", sf::IntRect(2 * (width + dist), 4 * (height + dist),width,height));
+                    field.card3[i][k].sprite.setTexture(field.card3[i][k].text);
+                    field.card3[i][k].sprite.setScale(Scale, Scale);
+                }
+                field.card3[i][k].sprite.setPosition(i * (width * Scale + dist_x) + 2 * dist_x, dist_y);
+                k++;
+            }
+        }
+    }
+    return field;
+}
+
+vis_field view_scrol(vis_field& field, Game_Field& f){
+    int k = 0;//счетчик карт
+    if(!field.card3[0].empty()){
+        Card card(f.base[1].cards[f.base[1].cards.size() - 1]);
+        field.card3[1].push_back(field.card3[0][0]);
+        field.card3[0].erase(field.card3[0].begin());
+        field.card3[1][field.card3[1].size() - 1].text.loadFromFile("picture.png", sf::IntRect((card.value - 1) * (width + dist), card.dist_suit(card.suit) * (height + dist),width,height));
+        field.card3[1][field.card3[1].size() - 1].sprite.setTexture(field.card3[1][field.card3[1].size() - 1].text);
+        field.card3[1][field.card3[1].size() - 1].sprite.setScale(Scale, Scale);
+        field.card3[1][field.card3[1].size() - 1].sprite.setPosition((width * 0.5 + dist_x) + 2 * dist_x, dist_y);
+    }
+    else{
+        field.card3[0].clear();
+        for(auto &p:field.card3[1]){
+            field.card3[0].push_back(p);
+            field.card3[0][field.card3[0].size() - 1].text.loadFromFile("picture.png",sf::IntRect(2 * (width + dist), 4 * (height + dist),width,height));
+            field.card3[0][field.card3[0].size() - 1].sprite.setTexture(field.card3[0][field.card3[0].size() - 1].text);
+            field.card3[0][field.card3[0].size() - 1].sprite.setScale(Scale,Scale);
+            field.card3[0][field.card3[0].size() - 1].sprite.setPosition(2 * dist_x, dist_y);
+        }
+        field.card3[1].clear();
+    }
+    return field;
+}
