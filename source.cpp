@@ -1,12 +1,12 @@
 #include "header.h"
 
-const int width = 155;//ширина карты на текстуре
-const int height = 227;//длина карты на текстуре
-const int dist_x = 20;//отступы по горизонатли
-const int dist_y = 20;//отсупы по вертикали
-const int dist = 2;//расстояние между картамив на картинке
-const float Scale = 0.5;//во сколько раз мы уменьшаем текстуру карты
-const int distantion = 25;//расстояние между картами
+const int width = 155;
+const int height = 227;
+const int dist_x = 20;
+const int dist_y = 20;
+const int dist = 2;
+const float Scale = 0.5;
+const int distantion = 25;
 int queue = 0;
 
 
@@ -15,10 +15,9 @@ bool wasMouseButtonReleased = false;
 vis_Card::vis_Card(){}
 
 vis_field::vis_field(){
-    card1[0].resize(28);
-    card1[1].resize(28);
     for(int i = 0; i < 7; i++)
-        card3[i].resize(i + 1);
+        card1[i].resize(i + 1);
+    card3[0].resize(24);
 }
 
 vis_field& vis_field::operator =(const vis_field& v){
@@ -62,25 +61,25 @@ bool Card::operator ==(const Card& r){
     }
 }
 
-Card::Card(){//конструктор по умолчанию
+Card::Card(){
     value = 2;
     suit = card_suit::card_suit_hearts;
     visible = false;
 }
 
-Card::Card(const Card& card){//конструктор копирования
+Card::Card(const Card& card){
     value = card.value;
     suit = card.suit;
     visible = card.visible;
 }
 
-Card::Card(int v, bool vis, card_suit su){//конструктор создает карту с нужными значениями
+Card::Card(int v, bool vis, card_suit su){
     value = v;
     visible = vis;
     suit = su;
 }
 
-int Card::dist_suit(card_suit s){//возвращает числовое значение масти карты(0-трефы, 1-бубны, 2-черви, 3-пики)
+int Card::dist_suit(card_suit s){
     if(s == Card::card_suit::card_suit_clubs){
         return 0;
     }
@@ -103,6 +102,7 @@ bool Box::isEmpty(){
 }
 
 void Box::show_last_card(){
+    if(cards.size() == 0) return;
     cards[cards.size() - 1].visible = true;
 }
 
@@ -122,7 +122,14 @@ void Game_Field::plant(Card* card){
     }
 }
 
-Card* Game_Field::random_change(){
+Card* Game_Field::random_change(int x){
+    int size = 0;
+    if(x == 1){
+        size = 52;
+    }
+    else{
+        size = 26;
+    }
     Card* card = new Card[52];
     int value = 0;
     int k = 1;
@@ -144,15 +151,15 @@ Card* Game_Field::random_change(){
     }
     int random_change = 0;
     while(random_change == 0){
-        random_change = rand() % 52;
+        random_change = rand() % size;
     }
-    for(int i = 0; i < 52; i++){
+    for(int i = 0; i < size; i++){
         Card temp = card[i];
         card[i] = card[random_change];
         card[random_change] = temp;
-        random_change = rand() % 52;
+        random_change = rand() % size;
         while(random_change == 0)
-            random_change = rand() % 52;
+            random_change = rand() % size;
     }
     return card;
 }
@@ -174,20 +181,48 @@ void Game_Field::scrol_base(){
 bool Game_Field::isRightFillmain(Card& card, int x){
     switch (x){
     case 1: 
-        if(main[0].isEmpty() && card.value == 1) return true;
+        if(main[0].isEmpty()) {
+            if(card.value == 1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
         if(main[0].cards[main[0].cards.size() - 1].value == card.value - 1 && main[0].cards[main[0].cards.size() - 1].suit == card.suit) return true;
         break;
     case 2: 
-        if(main[1].isEmpty() && card.value == 1) return true;
-        if(main[1].cards[main[2].cards.size() - 1].value == card.value - 1 && main[2].cards[main[0].cards.size() - 1].suit == card.suit) return true;
+        if(main[1].isEmpty()) {
+            if(card.value == 1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        if(main[1].cards[main[1].cards.size() - 1].value == card.value - 1 && main[1].cards[main[0].cards.size() - 1].suit == card.suit) return true;
         break;
     case 3: 
-        if(main[2].isEmpty() && card.value == 1) return true;
-        if(main[2].cards[main[2].cards.size() - 1].value == card.value - 1 && main[2].cards[main[0].cards.size() - 1].suit == card.suit) return true;
+        if(main[2].isEmpty()) {
+            if(card.value == 1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        if(main[2].cards[main[2].cards.size() - 1].value == card.value - 1 && main[2].cards[main[2].cards.size() - 1].suit == card.suit) return true;
         break;
     case 4: 
-        if(main[3].isEmpty() && card.value == 1) return true;
-        if(main[3].cards[main[3].cards.size() - 1].value == card.value - 1 && main[3].cards[main[0].cards.size() - 1].suit == card.suit) return true;
+        if(main[3].isEmpty()) {
+            if(card.value == 1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        if(main[3].cards[main[3].cards.size() - 1].value == card.value - 1 && main[3].cards[main[3].cards.size() - 1].suit == card.suit) return true;
         break;
     default:break;
     }
@@ -279,131 +314,45 @@ bool Game_Field::isRightShiftCard(Card& card, int x){
 }
 
 void Game_Field::fill_main(int x, int y){
-    switch (x){
-        case 0:
-            if(isRightFillmain(base[1].cards[base[1].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(base[1].cards[base[1].cards.size() - 1]);
-            }
-            break;
-        case 1:
-            if(isRightFillmain(sim[0].cards[sim[0].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[0].cards[sim[0].cards.size() - 1]);
-            }
-            break;
-        case 2:
-            if(isRightFillmain(sim[1].cards[sim[1].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[1].cards[sim[1].cards.size() - 1]);
-            }
-            break;
-        case 3:
-            if(isRightFillmain(sim[2].cards[sim[2].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[2].cards[sim[2].cards.size() - 1]);
-            }
-            break;
-        case 4:
-            if(isRightFillmain(sim[3].cards[sim[3].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[3].cards[sim[3].cards.size() - 1]);
-            }
-            break;
-        case 5:
-            if(isRightFillmain(sim[4].cards[sim[4].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[4].cards[sim[4].cards.size() - 1]);
-            }
-            break;
-        case 6:
-            if(isRightFillmain(sim[5].cards[sim[5].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[5].cards[sim[5].cards.size() - 1]);
-            }
-            break;
-        case 7:
-            if(isRightFillmain(sim[6].cards[sim[6].cards.size() - 1], y)){
-                main[y - 1].cards.push_back(sim[6].cards[sim[6].cards.size() - 1]);
-            }
-            break;
-        default:break;
+    if(isRightFillmain(base[1].cards[base[1].cards.size() - 1], y + 1) && x == 0){
+        main[y].cards.push_back(base[1].cards[base[1].cards.size() - 1]);
+        base[1].cards.pop_back();
+        return;
+    }
+    if(isRightFillmain(sim[x].cards[sim[x].cards.size() - 1], y + 1)){
+        main[y].cards.push_back(sim[x].cards[sim[x].cards.size() - 1]);
+        sim[x].cards.pop_back();
+        sim[x].show_last_card();
     }
 }
 
-void Game_Field::shiftCard(int i, int x, int y){
-    switch (x){
-    case 0:
-        if(isRightShiftCard(base[1].cards[base[1].cards.size() - 1], y)){
+bool Game_Field::shiftCard(int i, int x, int y){
+    if(!sim[x].cards[i].visible) return false;
+    if(x == 0){
+        if(isRightShiftCard(base[1].cards[base[1].cards.size() - 1], y + 1)){
             sim[y - 1].cards.push_back(base[1].cards[base[1].cards.size() - 1]);
-            base[1].cards.pop_back();
+            base[1].cards.pop_back();queue = 1;
+            return true;
         }
-        break;
-    case 1:
-        if(isRightShiftCard(sim[0].cards[i], y) && sim[0].cards[i].visible){
-            sim[y - 1].cards.resize(sim[0].cards.size());
-            for(int j = sim[0].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[0].cards[j]; 
-            for(int j = sim[0].cards.size() - 1; j >= i; j--)
-                sim[0].cards.pop_back();
-        }
-        break;
-    case 2:
-        if(isRightShiftCard(sim[1].cards[i], y) && sim[1].cards[i].visible){
-            sim[y - 1].cards.resize(sim[1].cards.size());
-            for(int j = sim[1].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[1].cards[j]; 
-            for(int j = sim[1].cards.size() - 1; j >= i; j--)
-                sim[1].cards.pop_back();
-        }
-        break;
-    case 3:
-        if(isRightShiftCard(sim[2].cards[i], y) && sim[2].cards[i].visible){
-            sim[y - 1].cards.resize(sim[2].cards.size());
-            for(int j = sim[2].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[2].cards[j]; 
-            for(int j = sim[2].cards.size() - 1; j >= i; j--)
-                sim[2].cards.pop_back();
-        }
-        break;
-    case 4:
-        if(isRightShiftCard(sim[3].cards[i], y) && sim[3].cards[i].visible){
-            sim[y - 1].cards.resize(sim[3].cards.size());
-            for(int j = sim[3].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[3].cards[j]; 
-            for(int j = sim[3].cards.size() - 1; j >= i; j--)
-                sim[3].cards.pop_back();
-        }       
-        break;
-    case 5:
-        if(isRightShiftCard(sim[4].cards[i], y) && sim[4].cards[i].visible){
-            sim[y - 1].cards.resize(sim[4].cards.size());
-            for(int j = sim[4].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[4].cards[j]; 
-            for(int j = sim[4].cards.size() - 1; j >= i; j--)
-                sim[4].cards.pop_back();
-        }
-        break;
-    case 6:
-        if(isRightShiftCard(sim[5].cards[i], y) && sim[5].cards[i].visible){
-            sim[y - 1].cards.resize(sim[5].cards.size());
-            for(int j = sim[5].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[j] = sim[5].cards[j]; 
-            for(int j = sim[5].cards.size() - 1; j >= i; j--)
-                sim[5].cards.pop_back();
-        }
-        break;
-    case 7:
-        if(isRightShiftCard(sim[6].cards[i], y) && sim[6].cards[i].visible){
-            sim[y - 1].cards.resize(sim[6].cards.size());
-            for(int j = sim[6].cards.size() - 1; j >= i; j--)
-                sim[y - 1].cards[6] = sim[6].cards[j]; 
-            for(int j = sim[6].cards.size() - 1; j >= i; j--)
-                sim[6].cards.pop_back();
-        }
-        break;
-    default:break;
     }
+    if(isRightShiftCard(sim[x].cards[i], y + 1) && sim[x].cards[i].visible){
+        for(int j = i; j < sim[x].cards.size();j++)
+            sim[y].cards.push_back(sim[x].cards[j]);
+        for(int j = i; j < sim[x].cards.size(); j = i)
+            sim[x].cards.pop_back();
+        sim[x].show_last_card();queue = 1;
+        return true;
+    }
+    return false;
 }
-
 
 void Drawing(){
-    int temp;
+    int x = 0;
+    std::cin >> x;
+    int y = 0;
     Game_Field field;
-    field.plant(field.random_change());
+    field.plant(field.random_change(x));
+    x = 0;
     sf::RenderWindow window(sf::VideoMode(1000, 600), "Pasyans");
     vis_field f; 
     
@@ -427,7 +376,7 @@ void Drawing(){
         sim[i].setScale(Scale, Scale);
         sim[i].setPosition(dist_x + i * (dist_x + width * 0.5), (dist_y + height * 0.5) + dist_y);
     }
-   
+  
     f = View(f, field);
     while (window.isOpen())
     {
@@ -443,12 +392,39 @@ void Drawing(){
         
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             if(wasMouseButtonReleased){
-                if(mouse.x > 2 * dist_x && mouse.x < 2 * dist_x + width && mouse.y > dist_y && mouse.y < dist_y + height){
+                bool flag = false;
+                if(mouse.x > 2 * dist_x && mouse.x < 2 * dist_x + width * 0.5 && mouse.y > dist_y && mouse.y < dist_y + height * 0.5){
                     field.scrol_base();
                     f = view_scrol(f,field);
                 }
-                if(mouse.x > (width * 0.5 + dist_x) + 2 * dist_x && mouse.x < (width * 0.5 + dist_x) + 2 * dist_x + width && mouse.y > dist_y && mouse.y < dist_y + height){
-                    queue = 1;
+                if(mouse.y > 2 * dist_y + height * Scale && queue % 2 == 0){
+                    for(int i = 0; i < 7; i++){
+                        flag = false;
+                        for(int j = f.card1[i].size() - 1; j >= 0; j--){
+                            if (f.card1[i][j].sprite.getGlobalBounds().contains(static_cast<float>(mouse.x), static_cast<float>(mouse.y))){
+                                x = i; y = j;
+                                flag = true; queue = 1;break;
+                            }
+                        }
+                        if(flag) break;
+                    }
+                }
+                if(queue % 2 == 0 && mouse.y > dist_y && mouse.y < dist_y + height * Scale && mouse.x > (width * 0.5 + dist_x) + 2 * dist_x && mouse.x < width * 0.5 + (width * 0.5 + dist_x) + 2 * dist_x){
+                    x = 0;queue = 1;
+                }
+                if(mouse.y > dist_y + height * Scale && queue % 2 == 1 && !flag){
+                    for(int i = 0; i < 7; i++){
+                        if(mouse.x > dist_x + i * (dist_x + width * 0.5) && mouse.x < width * 0.5 + dist_x + i * (dist_x + width * 0.5) ){
+                            if(field.shiftCard(y, x, i)){view_shift_card(f, field, y, x, i);}queue = 0;break;
+                        }
+                    }
+                }
+                if(mouse.y > dist_y && mouse.y < dist_y + height * Scale && queue % 2 == 1){
+                    for(int i = 0; i < 4; i++){
+                        if(mouse.x > i * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x) && mouse.x < width * 0.5 + i * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x)){
+                            view_fill_main(f,field, x, i);field.fill_main(x, i);queue = 0;break;
+                        }
+                    }
                 }
                 wasMouseButtonReleased = false;
             }
@@ -566,4 +542,55 @@ vis_field view_scrol(vis_field& field, Game_Field& f){
         field.card3[1].clear();
     }
     return field;
+}
+
+void view_fill_main(vis_field& field, Game_Field& f, int x, int y){
+    if(f.isRightFillmain(f.base[1].cards[f.base[1].cards.size() - 1], y + 1) && x == 0){  
+        field.card2[y].push_back(field.card3[1][field.card3[1].size() - 1]);
+        field.card3[1].pop_back();
+        Card card(f.base[1].cards[f.base[1].cards.size() - 1]);
+        field.card2[y][field.card2[y].size() - 1].text.loadFromFile("picture.png",sf::IntRect((card.value - 1) * (width + dist), card.dist_suit(card.suit) * (height + dist),width,height));
+        field.card2[y][field.card2[y].size() - 1].sprite.setTexture(field.card2[y][field.card2[y].size() - 1].text);
+        field.card2[y][field.card2[y].size() - 1].sprite.setScale(Scale,Scale);
+        field.card2[y][field.card2[y].size() - 1].sprite.setPosition(y * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x), dist_y);
+        return;
+    }
+    if(f.isRightFillmain(f.sim[x].cards[f.sim[x].cards.size() - 1], y + 1)){
+        field.card2[y].push_back(field.card1[x][field.card1[x].size() - 1]);
+        field.card1[x].pop_back();
+        Card card(f.sim[x].cards[f.sim[x].cards.size() - 1]);
+        field.card2[y][field.card2[y].size() - 1].text.loadFromFile("picture.png",sf::IntRect((card.value - 1) * (width + dist), card.dist_suit(card.suit) * (height + dist),width,height));
+        field.card2[y][field.card2[y].size() - 1].sprite.setTexture(field.card2[y][field.card2[y].size() - 1].text);
+        field.card2[y][field.card2[y].size() - 1].sprite.setScale(Scale,Scale);
+        field.card2[y][field.card2[y].size() - 1].sprite.setPosition(y * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x), dist_y);
+        if(f.sim[x].cards.size() == 1) return;
+        Card card1(f.sim[x].cards[f.sim[x].cards.size() - 2]);
+        field.card1[x][field.card1[x].size() - 1].text.loadFromFile("picture.png",sf::IntRect((card1.value - 1) * (width + dist), card1.dist_suit(card.suit) * (height + dist),width,height));
+        field.card1[x][field.card1[x].size() - 1].sprite.setTexture(field.card1[x][field.card1[x].size() - 1].text);
+        field.card1[x][field.card1[x].size() - 1].sprite.setScale(Scale,Scale);
+        //field.card1[x][field.card1[x].size() - 1].sprite.setPosition(y * (dist_x + width * 0.5) + 3 * dist_x + 2 * (width * 0.5 + dist_x), dist_y);
+    }
+}
+
+void view_shift_card(vis_field& field, Game_Field& f, int i, int x, int y){
+    sf::Vector2f k = field.card1[y][field.card1[y].size() - 1].sprite.getPosition();
+    int n = 1;
+    int size = field.card1[y].size();
+    for(int j = i; j < field.card1[x].size(); j++)
+        field.card1[y].push_back(field.card1[x][j]);
+    for(int j = i; j < field.card1[x].size(); j = i)
+        field.card1[x].pop_back();
+    for(int j = size; j < field.card1[y].size(); j++){
+        Card card(f.sim[y].cards[j]);
+        field.card1[y][j].text.loadFromFile("picture.png",sf::IntRect((card.value - 1) * (width + dist), card.dist_suit(card.suit) * (height + dist),width,height));
+        field.card1[y][j].sprite.setTexture(field.card1[y][j].text);
+        field.card1[y][j].sprite.setScale(Scale,Scale);
+        field.card1[y][j].sprite.setPosition(k.x, k.y + n * distantion);
+        n++;
+    }
+    if(f.sim[x].cards.size() == 0) return;
+    Card card(f.sim[x].cards[f.sim[x].cards.size() - 1]);
+    field.card1[x][field.card1[x].size() - 1].text.loadFromFile("picture.png",sf::IntRect((card.value - 1) * (width + dist), card.dist_suit(card.suit) * (height + dist),width,height));
+    field.card1[x][field.card1[x].size() - 1].sprite.setTexture(field.card1[x][field.card1[x].size() - 1].text);
+    field.card1[x][field.card1[x].size() - 1].sprite.setScale(Scale,Scale);
 }
