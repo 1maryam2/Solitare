@@ -1,4 +1,4 @@
-#include "header.h"
+ёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёё#include "header.h"
 
 const int width = 155;//ширина карты на текстуре
 const int height = 227;//длина карты на текстуре
@@ -62,25 +62,25 @@ bool Card::operator ==(const Card& r){
     }
 }
 
-Card::Card(){
+Card::Card(){//
     value = 2;
     suit = card_suit::card_suit_hearts;
     visible = false;
 }
 
-Card::Card(const Card& card){
+Card::Card(const Card& card){//конструктор копирования
     value = card.value;
     suit = card.suit;
     visible = card.visible;
 }
 
-Card::Card(int v, bool vis, card_suit su){
+Card::Card(int v, bool vis, card_suit su){//конструктор создает карту с нужными значениями
     value = v;
     visible = vis;
     suit = su;
 }
 
-int Card::dist_suit(card_suit s){
+int Card::dist_suit(card_suit s){//возвращает числовое значение масти карты(0-трефы, 1-бубны, 2-черви, 3-пики)
     if(s == Card::card_suit::card_suit_clubs){
         return 0;
     }
