@@ -62,7 +62,7 @@ bool Card::operator ==(const Card& r){
     }
 }
 
-Card::Card(){//
+Card::Card(){//конструктор по умолчанию
     value = 2;
     suit = card_suit::card_suit_hearts;
     visible = false;
