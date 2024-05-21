@@ -49,8 +49,8 @@ class Card{
         int dist_suit(card_suit s);//он нужен для отрисовки карты соотевствующей масти
     friend class Box;
     friend class Game_Field;
-    friend vis_field View(vis_field& field,  Game_Field& f);//фронтент
-    friend vis_field view_scrol(vis_field& field, Game_Field& f);//фронтент
+    friend vis_field View(vis_field& field,  Game_Field& f);//фронтенд
+    friend vis_field view_scrol(vis_field& field, Game_Field& f);//фронтенд
 };
 
 class Box{
