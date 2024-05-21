@@ -56,31 +56,27 @@ class Card{
     friend void view_fill_main(vis_field& field, Game_Field& f, int x , int y);
     friend void view_shift_card(vis_field& field, Game_Field& f, int i, int x, int y);
 };
-
 class Box{
     private:
         std::vector<Card> cards;
     public:
         Box();
-        bool isEmpty();
-        void show_last_card();
+        bool isEmpty();//если box пуст - true, если нет - false
+        void show_last_card();//метод который проявляет последнюю карту в боксе
     friend class Game_Field;
     friend vis_field View(vis_field& field,  Game_Field& f);
     friend vis_field view_scrol(vis_field& field, Game_Field& f);
-    friend void view_fill_main(vis_field& field, Game_Field& f, int x , int y);
-    friend void view_shift_card(vis_field& field, Game_Field& f, int i, int x, int y);
 };
-
 class Game_Field{
     public:
         Box main[4];
         Box sim[7];
         Box base[2];
         void scrol_base();
-        void plant(Card* card);
-        Card* random_change(int x);
-        void fill_main(int x, int y);
-        bool shiftCard(int i,int  x, int y);
+        void plant(Card* card);//метод который заполняет карты согласено переданному массиву card
+        Card* random_change(int x);//метод который произвольно перемешивает колоду и возращает массив карт(если передается 1 - колода премешивается на половину , если 2 - колода перемешаивается полностью)
+        void fill_main(int x, int y);//метод который перемещает карту из бокса x в соотвествующий бокс y(main)
+        void shiftCard(int i, int  x, int y);//метод который перемещает между семью игровыми полями(i - сколько,x-откуда перемещается,y-куда перемещается)
         bool isRightFillmain(Card& card, int x);
         bool isRightShiftCard(Card& card, int x);
 };
